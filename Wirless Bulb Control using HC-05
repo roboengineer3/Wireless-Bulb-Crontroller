@@ -1,4 +1,4 @@
-char val;
+char robo;
 
  
 void setup() {
@@ -12,14 +12,14 @@ Serial.begin(9600);
 void loop() {
 
   if(Serial.available()){
- val = Serial.read();
- Serial.println(val);
+ robo = Serial.read();
+ Serial.println(robo);
 }
-if(val=='1'){
+if(robo=='1'){
   digitalWrite(13,LOW);
  
 }
-else if(val=='2'){
+else if(robo=='2'){
   digitalWrite(13,HIGH);
 
 }
