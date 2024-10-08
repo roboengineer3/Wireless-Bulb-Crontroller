@@ -1,12 +1,10 @@
 char robo;
 
- 
 void setup() {
 
 pinMode(13,OUTPUT);
 Serial.begin(9600);
  digitalWrite(13,HIGH);
-  
 }
 
 void loop() {
@@ -23,7 +21,6 @@ else if(robo=='2'){
   digitalWrite(13,HIGH);
 
 }
-
 
 delay(100);
 
