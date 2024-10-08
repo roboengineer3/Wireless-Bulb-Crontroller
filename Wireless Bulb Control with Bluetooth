@@ -1,3 +1,6 @@
+//I'm using Arduino UNO, HC-05 Bluetooth Module, 5v relay with android application Arduino BluControl.
+//https://play.google.com/store/apps/details?id=com.broxcode.arduinobluetoothfree
+
 char robo;
 
 void setup() {
