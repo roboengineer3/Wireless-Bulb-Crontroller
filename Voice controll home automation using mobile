@@ -1,3 +1,6 @@
+//In this project, we will control home automation via mobile application with over voice control.
+//In this project, we will control bulb & Fan.
+
 #define bulb 2
 #define fan 3
 
