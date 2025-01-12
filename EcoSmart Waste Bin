@@ -1,0 +1,81 @@
+#include <Servo.h>
+
+// Pin definitions
+// Upper part (lid control)
+const int trigPinUpper = 9;  // Ultrasonic sensor trigger pin
+const int echoPinUpper = 10; // Ultrasonic sensor echo pin
+const int servoPinUpper = 3; // Servo motor for lid
+
+// Lower part (waste separator)
+const int trigPinLower = 11;  // Ultrasonic sensor trigger pin (to detect waste)
+const int echoPinLower = 12;  // Ultrasonic sensor echo pin (to detect waste)
+const int soilMoisturePin = A0; // Soil moisture sensor pin
+const int servoPinLower = 5;  // Servo motor for separator
+
+// Servo objects
+Servo servoUpper;
+Servo servoLower;
+
+long durationUpper, distanceUpper;
+long durationLower, distanceLower;
+
+// Function to get distance from ultrasonic sensor
+long getDistance(int trigPin, int echoPin) {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  long duration = pulseIn(echoPin, HIGH);
+  long distance = duration * 0.034 / 2;  // Convert to cm
+  return distance;
+}
+
+void setup() {
+  // Initialize pins
+  pinMode(trigPinUpper, OUTPUT);
+  pinMode(echoPinUpper, INPUT);
+  pinMode(trigPinLower, OUTPUT);
+  pinMode(echoPinLower, INPUT);
+  pinMode(soilMoisturePin, INPUT);
+
+  // Attach servos
+  servoUpper.attach(servoPinUpper);
+  servoLower.attach(servoPinLower);
+
+  // Initialize Serial for debugging
+  Serial.begin(9600);
+}
+
+void loop() {
+  // *** Upper Part: Lid Control ***
+  distanceUpper = getDistance(trigPinUpper, echoPinUpper);
+  Serial.print("Upper Distance: ");
+  Serial.println(distanceUpper);
+
+  if (distanceUpper < 30) {  // If someone is detected within 30 cm
+    servoUpper.write(90);    // Open the lid (90 degrees)
+    delay(3000);             // Keep the lid open for 3 seconds
+    servoUpper.write(0);     // Close the lid (0 degrees)
+  }
+
+  // *** Lower Part: Waste Detection and Separation ***
+  distanceLower = getDistance(trigPinLower, echoPinLower);
+  int soilMoistureValue = analogRead(soilMoisturePin);
+  
+  Serial.print("Lower Distance: ");
+  Serial.println(distanceLower);
+  Serial.print("Soil Moisture: ");
+  Serial.println(soilMoistureValue);
+
+  if (distanceLower < 20) {  // Waste detected in the lower bin
+    if (soilMoistureValue < 300) {  // Wet waste
+      servoLower.write(90);  // Move separator to wet waste position
+    } else {  // Dry waste
+      servoLower.write(0);   // Move separator to dry waste position
+    }
+    delay(3000);  // Keep separator in position for 3 seconds
+  }
+
+  delay(100);  // Small delay for sensor stability
+}
