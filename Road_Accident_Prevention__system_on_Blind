@@ -1,0 +1,83 @@
+// Define pins for ultrasonic sensor 1 and 2
+const int trigPin1 = 2; 
+const int echoPin1 = 3;
+const int trigPin2 = 4; 
+const int echoPin2 = 5;
+
+// Define pins for LEDs and buzzers
+const int greenLED_A = 6;  // Green LED for side A
+const int redLED_A = 7;    // Red LED for side A
+const int buzzer_A = 8;    // Buzzer for side A
+
+const int greenLED_B = 9;  // Green LED for side B
+const int redLED_B = 10;   // Red LED for side B
+const int buzzer_B = 11;   // Buzzer for side B
+
+long duration1, distance1;
+long duration2, distance2;
+
+void setup() {
+  pinMode(trigPin1, OUTPUT);
+  pinMode(echoPin1, INPUT);
+  
+  pinMode(trigPin2, OUTPUT);
+  pinMode(echoPin2, INPUT);
+
+  pinMode(greenLED_A, OUTPUT);
+  pinMode(redLED_A, OUTPUT);
+  pinMode(buzzer_A, OUTPUT);
+
+  pinMode(greenLED_B, OUTPUT);
+  pinMode(redLED_B, OUTPUT);
+  pinMode(buzzer_B, OUTPUT);
+
+  Serial.begin(9600); // For debugging
+}
+
+void loop() {
+  // Measure distance for Side A
+  digitalWrite(trigPin1, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin1, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin1, LOW);
+  
+  duration1 = pulseIn(echoPin1, HIGH);
+  distance1 = (duration1 * 0.034) / 2; // Convert to cm
+
+  // Measure distance for Side B
+  digitalWrite(trigPin2, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin2, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin2, LOW);
+  
+  duration2 = pulseIn(echoPin2, HIGH);
+  distance2 = (duration2 * 0.034) / 2; // Convert to cm
+
+  // Both green LEDs ON by default
+  digitalWrite(greenLED_A, HIGH);
+  digitalWrite(greenLED_B, HIGH);
+
+  // Logic for side A: If vehicle is detected, green LED off, red LED and buzzer ON
+  if (distance1 < 10) {  // If vehicle is detected on side A within 100cm range
+    digitalWrite(greenLED_A, LOW);   // Turn OFF Green LED for side A
+    digitalWrite(redLED_A, HIGH);    // Turn ON Red LED for side A
+    digitalWrite(buzzer_A, HIGH);    // Turn ON Buzzer for side A
+  } else {
+    digitalWrite(redLED_A, LOW);     // Turn OFF Red LED for side A
+    digitalWrite(buzzer_A, LOW);     // Turn OFF Buzzer for side A
+  }
+
+  // Logic for side B: If vehicle is detected, green LED off, red LED and buzzer ON
+  if (distance2 < 10) {  // If vehicle is detected on side B within 100cm range
+    digitalWrite(greenLED_B, LOW);   // Turn OFF Green LED for side B
+    digitalWrite(redLED_B, HIGH);    // Turn ON Red LED for side B
+    digitalWrite(buzzer_B, HIGH);    // Turn ON Buzzer for side B
+  } else {
+    digitalWrite(redLED_B, LOW);     // Turn OFF Red LED for side B
+    digitalWrite(buzzer_B, LOW);     // Turn OFF Buzzer for side B
+  }
+
+  delay(100);  // Small delay for stability
+}
